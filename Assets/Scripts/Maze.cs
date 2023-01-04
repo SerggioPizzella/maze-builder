@@ -1,37 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Unity.VisualScripting;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-
 namespace Assets.Scripts
 {
-    internal class Maze : MonoBehaviour
+  internal class Maze : MonoBehaviour
     {
         [SerializeField] int width = 2;
         [SerializeField] int height = 2;
         [SerializeField] MeshFilter meshFilter;
 
-        MazeGenerator generator;
         MazeVisualizer visualizer;
 
         private void Start()
         {
-            GenerateMaze();
+            GenerateMaze(new DepthFirstSearch(width, height));
         }
 
-        public void GenerateMaze()
+        private void GenerateMaze(IMazeGenerator generator)
         {
-            generator = new MazeGenerator(width, height);
             visualizer = new MazeVisualizer(width, height);
 
             List<(Position, Position)> transitions = generator.GenerateMaze();
             Mesh mesh = visualizer.GenerateMesh(transitions);
             meshFilter.mesh = mesh;
         }
+
+		public void GenerateMaze()
+		{
+			GenerateMaze(new DepthFirstSearch(width, height));
+		}
 
         public void SetWidthFromSlider(Slider widthSlider)
         {
