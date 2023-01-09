@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Assets.Scripts
 {
     // This generates a maze using the depth-first search algorithm.
-    public class DepthFirstSearch : IMazeGenerator
+    public class DepthFirstSearch : IMazeAlgorithm
     {
         // Width and height of the maze.
         private int width;
@@ -14,16 +14,13 @@ namespace Assets.Scripts
         // Grid of cells representing the maze.
         private Cell[,] grid;
 
-        public DepthFirstSearch(int width, int height)
+        // GenerateMaze generates a maze using the depth-first search algorithm.
+        // It returns a list of transitions representing the paths taken to generate the maze.
+        public Maze GenerateMaze(int width, int height)
         {
             this.width = width;
             this.height = height;
-        }
 
-        // GenerateMaze generates a maze using the depth-first search algorithm.
-        // It returns a list of transitions representing the paths taken to generate the maze.
-        public List<(Position, Position)> GenerateMaze()
-        {
             grid = new Cell[width, height];
 
             // Initialize each cell in the grid.
@@ -36,17 +33,16 @@ namespace Assets.Scripts
             }
 
             // List of transitions representing the paths taken to generate the maze.
-            List<(Position, Position)> transitions =
-                new List<(Position, Position)>();
+            List<(Position, Position)> transitions = new();
 
             // Stack of cells representing the path taken to generate the maze.
-            Stack<Cell> cellStack = new Stack<Cell>();
+            Stack<Cell> cellStack = new();
 
             // Start the maze generation from the top-left cell.
             Cell start = grid[0, 0];
 
             // Push the start cell onto the stack and mark it as visited.
-            cellStack.Push (start);
+            cellStack.Push(start);
             start.Visited = true;
 
             // While there are cells in the stack, continue generating the maze.
@@ -67,11 +63,11 @@ namespace Assets.Scripts
                 Cell nextCell = neighbours[index];
 
                 transitions.Add((currentCell.Position, nextCell.Position));
-                cellStack.Push (nextCell);
+                cellStack.Push(nextCell);
                 nextCell.Visited = true;
             }
 
-            return transitions;
+            return new(width, height, transitions);
         }
 
         private Cell[] GetUnvisitedNeighbours(Cell currentCell)
@@ -81,7 +77,7 @@ namespace Assets.Scripts
             int[] dy = { 0, 0, -1, 1 };
 
             // List of unvisited neighbours.
-            List<Cell> cells = new List<Cell>();
+            List<Cell> cells = new();
 
             // Check the neighbours of the current cell.
             for (int i = 0; i < 4; i++)
@@ -96,7 +92,7 @@ namespace Assets.Scripts
                     Cell cell = grid[x, y];
                     if (!cell.Visited)
                     {
-                        cells.Add (cell);
+                        cells.Add(cell);
                     }
                 }
             }
